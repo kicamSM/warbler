@@ -112,6 +112,8 @@ def login():
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
+    # user = User.query.get(session[CURR_USER_KEY])
+    do_logout()
     flash("You have been logged out!", 'success')
     return redirect('/login')
     # IMPLEMENT THIS
@@ -151,6 +153,7 @@ def users_show(user_id):
                 .order_by(Message.timestamp.desc())
                 .limit(100)
                 .all())
+    # location = 
     return render_template('users/show.html', user=user, messages=messages)
 
 
