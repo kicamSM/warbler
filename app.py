@@ -190,6 +190,7 @@ def add_follow(follow_id):
 
     followed_user = User.query.get_or_404(follow_id)
     g.user.following.append(followed_user)
+    # raise ValueError(g.user.following)
     db.session.commit()
 
     return redirect(f"/users/{g.user.id}/following")
@@ -312,13 +313,31 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
     """
+    # g.user.following.append(followed_user)
+    # this is how the previous routes are adding the followings 
 
     if g.user:
+        # if g.user.following == True:
+        # messages = g.user.following(Message 
+        # this is returning Instrumented list which is not callable 
+        #in models there is a function which is is_following that is probably what you need in order to return the messages of only followed users
+        
+        # raise ValueError(User.is_following(g.user))
+        # raise ValueError(g.user.following.messages)
+        # following = list(g.user.following)
+        following_ids = [f.id for f in g.user.following] + [g.user.id]
+        # raise ValueError(following_ids)
+            # raise ValueError(f.id)
+        # raise ValueError(following.message)
         messages = (Message
-                    .query
-                    .order_by(Message.timestamp.desc())
-                    .limit(100)
-                    .all())
+                        .query
+                        .order_by(Message.timestamp.desc())
+                        .filter(Message.user_id.in_(following_ids))
+                        .limit(100)
+                        .all())
+        # raise ValueError(g.user.following.messages)
+        # raise ValueError(g.user.following.messages)
+                    # change this from all to just the users that the user is following and the logged in user 
 
         return render_template('home.html', messages=messages)
 
