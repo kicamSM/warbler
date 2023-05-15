@@ -25,6 +25,7 @@ class Follows(db.Model):
         db.ForeignKey('users.id', ondelete="cascade"),
         primary_key=True,
     )
+    # two foreign keys to the same table because we are talking abou two individuals in this same table one who is the follower and the one being followed
 
 
 class Likes(db.Model):

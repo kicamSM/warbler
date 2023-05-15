@@ -35,16 +35,18 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
+        # this is so that you can reference the global object which will be the logged in user. 
 
     else:
         g.user = None
-
+        #if no longed in user than there will  ot be  a global object and I believe that there will be restrictions to what you can access. 
 
 def do_login(user):
     """Log in user."""
 
     session[CURR_USER_KEY] = user.id
-
+    # adding user.id in the session 
+    #  the flask g object is the global object which is data being stored in flask globtally 
 
 def do_logout():
     """Logout user."""
