@@ -162,7 +162,8 @@ def add_like(msg_id):
     # raise ValueError(liked_msg.id)
     # g.user.following.append(followed_user)
     g.user.likes.append(liked_msg)
-    # raise ValueError(g.user.following)
+    # raise ValueError(g.user.likes)
+    # g.user.likes has messages in it so there is a disconnect between the two functions 
     db.session.commit()
     
     return render_template('users/show.html', liked_msg=liked_msg, user=user)
@@ -181,9 +182,21 @@ def show_likes(user_id):
 
     user = User.query.get_or_404(user_id)
     # user = g.user
+    # message = Message.query.all()
+    # raise ValueError(g.user.likes)
+    liked_ids = [l.id for l in g.user.likes]
+    # raise ValueError(liked_ids)
+    # raise ValueError(l.id)
     
-    
-    return render_template('users/likes.html', user=user)
+    messages = (Message
+                        .query
+                        .order_by(Message.timestamp.desc())
+                        .filter(Message.id.in_(liked_ids))
+                        .limit(100)
+                        .all())
+    # raise ValueError(messages)
+    #note that this all seems to be working accept that the messages currently have nothing inside of them 
+    return render_template('users/likes.html', user=user, messages=messages)
     
 
 @app.route('/users/<int:user_id>')
@@ -374,14 +387,14 @@ def homepage():
         # following = list(g.user.following)
         following_ids = [f.id for f in g.user.following] + [g.user.id]
         # raise ValueError(following_ids)
-            # raise ValueError(f.id)
-        # raise ValueError(following.message)
+
         messages = (Message
                         .query
                         .order_by(Message.timestamp.desc())
                         .filter(Message.user_id.in_(following_ids))
                         .limit(100)
                         .all())
+        # raise ValueError(messages)
         # raise ValueError(g.user.following.messages)
         # raise ValueError(g.user.following.messages)
                     # change this from all to just the users that the user is following and the logged in user 
