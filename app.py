@@ -158,6 +158,7 @@ def add_like(msg_id):
         return redirect("/")
 
     liked_msg = Message.query.get_or_404(msg_id)
+    # raise ValueError(liked_msg)
     
     # raise ValueError(liked_msg.id)
     # g.user.following.append(followed_user)
@@ -185,6 +186,10 @@ def show_likes(user_id):
     # message = Message.query.all()
     # raise ValueError(g.user.likes)
     liked_ids = [l.id for l in g.user.likes]
+# ********************************************************
+    # this is not updating the two value for some reason wheen we are redirecting to this route from the remove like 
+    # currently liked_ids are have 3 values in list
+#************************************************************
     # raise ValueError(liked_ids)
     # raise ValueError(l.id)
     
@@ -197,7 +202,29 @@ def show_likes(user_id):
     # raise ValueError(messages)
     #note that this all seems to be working accept that the messages currently have nothing inside of them 
     return render_template('users/likes.html', user=user, messages=messages)
-    
+
+@app.route('/users/remove_like/<int:msg_id>', methods=["POST"])
+def remove_like(msg_id):
+    # liked_ids = [l.id for l in g.user.likes]
+    # also 3 values in liked_ids here 
+    # raise ValueError(g.user.likes)
+    # for index, item in enumerate(liked_ids):
+    #     if item.id == msg_id: 
+    #         break 
+    #     else: 
+    #         index -1 
+    # msg_index  = liked_ids.index(msg_id)
+    # raise ValueError(msg_index)
+    # msg_index = liked_ids.where(msg_id)
+    # raise ValueError(msg_index)
+    # liked_ids.pop(msg_index)
+    # liked ids only have two values here which is also correct 
+    # raise ValueError(liked_ids)
+    message = Message.query.get(msg_id)
+    g.user.likes.remove(message)
+    db.session.commit()
+    # raise ValueError(liked_ids)
+    return redirect(f"/users/{g.user.id}")
 
 @app.route('/users/<int:user_id>')
 def users_show(user_id):

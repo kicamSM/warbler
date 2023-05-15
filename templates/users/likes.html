@@ -14,6 +14,8 @@
             <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span>
             <p>{{ msg.text }}</p>
           </div>
+          
+          {% if msg.id in likes %}
           <form method="POST" action="/users/add_like/{{ msg.id }}" id="messages-form">
             <button class="
               btn 
@@ -24,6 +26,19 @@
               <i class="fa fa-thumbs-up"></i> 
             </button>
           </form>
+          {% else %}
+          <form method="POST" action="/users/remove_like/{{ msg.id }}" id="messages-form">
+            <button class="
+              btn 
+              btn-sm 
+              {{'btn-primary' if msg.id in likes else 'btn-secondary'}}"
+            >
+            <!-- this is the like button above and below this we want this form to up a count for likes for that user and those to be able to be displayed on the users page.  -->
+              <i class="fa fa-thumbs-up"></i> 
+            </button>
+          </form>
+          {% endif %}
+
         </li>
       {% endfor %}
     </ul>
