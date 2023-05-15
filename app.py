@@ -32,6 +32,11 @@ connect_db(app)
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
+   #add_user_to_g is a function which is adding the current user to the Flask global if that user is logged in. This is going to allow us to show the correct and allowed user pages by grabbing the g.user (of the logged in individudal) and displaying the correct information. 
+   
+    # @app.before_request means that this function is running before each request. This allows us to continuakky have the currect g.user in the session 
+    
+    #Flask g object is the data that is being saved globally in flask in this case the g.user 
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
@@ -140,6 +145,46 @@ def list_users():
 
     return render_template('users/index.html', users=users)
 
+@app.route('/users/add_like/<int:msg_id>', methods=["POST"])
+def add_like(msg_id):
+    """Add a like to specific message"""
+    # msg_list = []
+    # msg = Message.query.get_or_404(msg_id)
+    
+    # msg_list.append(msg)
+    user = g.user
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    liked_msg = Message.query.get_or_404(msg_id)
+    
+    # raise ValueError(liked_msg.id)
+    # g.user.following.append(followed_user)
+    g.user.likes.append(liked_msg)
+    # raise ValueError(g.user.following)
+    db.session.commit()
+    
+    return render_template('users/show.html', liked_msg=liked_msg, user=user)
+# if you do the above return instead you have to be able to pass in the user as well 
+
+    # return redirect(f"/users/{g.user.id}")
+    
+# msg_list needs to be passed in to the html which means either you need to simply return the html or you need to return route and then somehow add the msg_List to that route 
+
+@app.route('/users/<int:user_id>/likes')
+def show_likes(user_id):
+    
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    # user = g.user
+    
+    
+    return render_template('users/likes.html', user=user)
+    
 
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
