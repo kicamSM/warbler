@@ -54,6 +54,7 @@ class MessageModelTestCase(TestCase):
         self.client = app.test_client()
         
     def tearDown(self):
+        """Returns to setUp for next function"""
         res = super().tearDown()
         # this is saying we can tear down anything created and we are accessing the method of the baseclass?
         
@@ -86,7 +87,9 @@ class MessageModelTestCase(TestCase):
         
         self.assertEqual(len(userTwo.messages), 2)
         
-    def test_messages_add_fail(self): 
+    def test_messages_add_fail(self):
+        """Fails adding a message when no user id exists""" 
+        
         with self.assertRaises(BaseException) as e: 
             self.assertEqual(e.exception.code)
             message1 = Message(user_id=1111, text=None)
@@ -97,6 +100,7 @@ class MessageModelTestCase(TestCase):
     #         self.assertIn('<p>This is the first message for user one</p>', html)
     
     def test_add_likes(self): 
+        """adds a like to a message"""
         # raise ValueError(len(self.userOne.likes))
         message = Message.query.get(self.message_id)
         # raise ValueError(message)
@@ -105,6 +109,7 @@ class MessageModelTestCase(TestCase):
         self.assertEqual(len(self.userOne.likes), 1)
     
     def test_messages_destroy(self): 
+        """Deletes message"""
         message = self.userOne.messages[0]
         # raise ValueError(message)
         db.session.delete(message)
