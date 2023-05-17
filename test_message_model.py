@@ -44,7 +44,9 @@ class MessageModelTestCase(TestCase):
 
         # this is setting up a user_id for that user 
         
-        message = Message(user_id=1111, text="This is the first message")
+        message = Message(user_id=1111, text="This is the first message for user one")
+        self.message_id = 23
+        message.id = self.message_id
         db.session.add(message)
         db.session.commit()
 
@@ -90,9 +92,19 @@ class MessageModelTestCase(TestCase):
             message1 = Message(user_id=1111, text=None)
             
     # def test_messages_show(self): 
+    #     with app.test_client() as client:
+    #         resp = client.get('/messages/23')
+    #         self.assertIn('<p>This is the first message for user one</p>', html)
     
+    def test_add_likes(self): 
+        # raise ValueError(len(self.userOne.likes))
+        message = Message.query.get(self.message_id)
+        # raise ValueError(message)
+        self.userOne.likes.append(message)
+        db.session.commit()
+        self.assertEqual(len(self.userOne.likes), 1)
     
-    def test_messages_destrpy(self): 
+    def test_messages_destroy(self): 
         message = self.userOne.messages[0]
         # raise ValueError(message)
         db.session.delete(message)
