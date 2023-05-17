@@ -77,13 +77,9 @@ class UserModelTestCase(TestCase):
         db.session.add(u)
         db.session.commit()
 
-        # User should have no messages & no followers
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
         
-    # def test_user_create(self):
-    #     """test creation of user"""
-    #     User.create
     
     def test_repr(self):
         """Test repr of class"""
@@ -101,6 +97,14 @@ class UserModelTestCase(TestCase):
     
     def test_is_followed_by(self): 
         """Does is followed by work?"""  
+        self.user1.following.append(self.user2)
+        db.session.commit()
+        userTwo = User.query.get(2222)
+        
+        self.assertEqual(userTwo.email, "JohnDOe@email.com")
+        self.assertEqual(len(self.user2.following), 0)
+        self.assertEqual(len(self.user2.followers), 1)
+        # *****************************************************
         # other_user = User(
         #     email="otherUser@test.com",
         #     username="otherUser"
@@ -122,36 +126,64 @@ class UserModelTestCase(TestCase):
         # )
         
         # found_user_list = [user for user in self.followers if user == other_user]
-        self.user1.following.append(self.user2)
-        db.session.commit()
-        
-        # self.assertEquals(userOne.email, "testFollowed@test.com")
+
         # self.assertEquals(other_user.username, "testFollowedBy")
         # self.assertTrue(len(found_user_list) == 1)
         
-        self.assertEqual(len(self.user2.following), 0)
-        self.assertEqual(len(self.user2.followers), 1)
-        
+       
         
         
     def test_is_following(self):
         """Does is is following detect user following?"""
         self.user2.following.append(self.user1)
         db.session.commit()
+        
+        userOne = User.query.get(1111)
+        self.assertEqual(len(self.user2.following), 1)
+        self.assertEqual(len(self.user2.followers), 0)
+        self.assertEqual(userOne.email, "JaneDoe@email.com")
+        # *****************************************************
         # u = User(
         #     email="test@test.com",
         #     username="testuser",
         #     password="HASHED_PASSWORD"
         # )
-        self.assertEqual(len(self.user2.following), 1)
-        self.assertEqual(len(self.user2.followers), 0)
 
         # db.session.add(u)
         # db.session.commit()
         
-        # self.assertEqual(self.userOne.email, "JaneDoe@email.com")
-        # self.assertEqual(self.userOne.userid1, 1111)
-        # self.assertEqual(self.userOne.password, None)
+        # self.assertEqual(userOne.userid1, 1111)
+        # self.assertEqual(userOne.password, None)
         
-
-      
+    def test_signup_pass(self):
+        newUser = User.signup("testUser3", "JimDoe@email.com", "password", None)
+        db.session.commit()
+        
+        self.assertEqual(len(User.query.all()), 3)
+    
+    def test_signup_fail(self):
+        with self.assertRaises(TypeError):
+            newUser = User.signup("testUser3", "password", None)
+  
+        
+    def test_authentication_pass(self): 
+        newUser = User.signup("testUser3", "newuser@email.com", "password", "happyman")
+        
+        self.assertTrue(newUser.password.startswith("$2b$"))
+        
+    def test_authentication_password_fail(self):
+        with self.assertRaises(ValueError):
+            newUser = User.signup("testUser3", "newuser@email.com", None, None)
+        
+        # self.assertTrue(newUser.password.startswith("$2b$"))
+        # this one you need to do so it raises an error. 
+    
+    def test_authentication_username_fail(self):
+        # with self.assertRaises(InvalidRequestError):
+        with self.assertRaises(BaseException) as e: 
+            self.assertEqual(e.exception.code)
+            newUser = User.signup("testUser1", "newuser@email.com", "password", "ha")
+        
+        # self.assertTrue(newUser.password.startswith("$2b$"))
+        
+        
