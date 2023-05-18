@@ -93,14 +93,18 @@ class UserViewTestCase(TestCase):
         self.assertIn("@testuser2", str(resp.data))
         self.assertEqual(resp.status_code, 200)
         
-    def contains_link_1(html_string):
-    # The regex pattern r'<a>\s*1\s*</a>' means:
-    # '<a>' - match the literal string '<a>'
-    # '\s*' - match zero or more whitespace characters
-    # '1'   - match the literal character '1'
-    # '\s*' - match zero or more whitespace characters
-    # '</a>' - match the literal string '</a>'
-        return bool(re.search(r'<a>\s*1\s*</a>', html_string))
+    #would like to be able to test the html with this below but still working on it 
+    
+    # def contains_link_1(html_string):
+    # # The regex pattern r'<a>\s*1\s*</a>' means:
+    # # '<a>' - match the literal string '<a>'
+    # # '\s*' - match zero or more whitespace characters
+    # # '1'   - match the literal character '1'
+    # # '\s*' - match zero or more whitespace characters
+    # # '</a>' - match the literal string '</a>'
+    #     return bool(re.search(r'<a>\s*1\s*</a>', html_string))
+    
+    # still having issues with the ones below 
         
     # def test_user_show_following_logged_in(self):
     #     """test show following users"""
@@ -156,16 +160,17 @@ class UserViewTestCase(TestCase):
         self.assertIn("@testuser1", str(resp.data))
         
     def test_unauthorized_following_page_access(self):
+        """test the unathorized following page"""
             # self.setup_followers()
-            f1 = Follows(user_being_followed_id=self.testuser2.id, user_following_id=self.testuser1.id)
-            db.session.add(f1)
-            db.session.commit()
-            with self.client as c:
+        f1 = Follows(user_being_followed_id=self.testuser2.id, user_following_id=self.testuser1.id)
+        db.session.add(f1)
+        db.session.commit()
+        with self.client as c:
 
-                resp = c.get(f"/users/{self.testuser1.id}/following", follow_redirects=True)
-            self.assertEqual(resp.status_code, 200)
-            # self.assertNotIn("@testuser2", str(resp.data))
-            self.assertIn("Access unauthorized", str(resp.data))        
+            resp = c.get(f"/users/{self.testuser1.id}/following", follow_redirects=True)
+        self.assertEqual(resp.status_code, 200)
+        # self.assertNotIn("@testuser2", str(resp.data))
+        self.assertIn("Access unauthorized", str(resp.data))        
 
     
             

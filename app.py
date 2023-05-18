@@ -205,6 +205,7 @@ def show_likes(user_id):
 
 @app.route('/users/remove_like/<int:msg_id>', methods=["POST"])
 def remove_like(msg_id):
+    """remove the like from message"""
     # liked_ids = [l.id for l in g.user.likes]
     # also 3 values in liked_ids here 
     # raise ValueError(g.user.likes)
