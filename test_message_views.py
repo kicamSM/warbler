@@ -160,6 +160,7 @@ class MessageViewTestCase(TestCase):
                 db.session.add(message)
                 
     def test_message_show(self): 
+        """Test if the message displays"""
         with self.client as c:
             message = Message(
                 id = 99,
@@ -221,6 +222,22 @@ class MessageViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             
     def test_access_follower_logged_in(self): 
+        """test if a user can access followers when logged in"""
+        
+        with self.client as c:
+            
+            testuser_2id = 33
+            
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = testuser_2id
+                
+            resp = c.get("/users/54/followers", follow_redirects=True) 
+            
+            self.assertEqual(resp.status_code, 200)
+            
+            
+    def test_access_following_logged_in(self): 
+        """test if a user can access followers when logged in"""
         
         with self.client as c:
             
@@ -232,6 +249,29 @@ class MessageViewTestCase(TestCase):
             resp = c.get("/users/54/following", follow_redirects=True) 
             
             self.assertEqual(resp.status_code, 200)
+            
+    def test_add_follow(self): 
+        # raise ValueError(self.testuser.following)
+        # the self.testuser.following is giving me the error
+        raise ValueError(self.testuser.is_following)
+        with self.client as c:
+            
+            user3 = User.signup(username="testuser3",
+                                    email="test3@test.com",
+                                    password="testuser3",
+                                    image_url=None)
+        testuser_3id = 88 
+        db.session.add(user3)
+        db.session.commit()
+        user3 = User.query.get(88)
+        with c.session_transaction() as sess:
+            sess[CURR_USER_KEY] = self.testuser.id
+
+        self.testuser.following.append(user3)
+        
+        self.assertEqual(len(self.testuser.following), 1)
+            
+        
 
             
     # def test_access_follower_logged_out(self): 

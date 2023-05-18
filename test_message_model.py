@@ -87,6 +87,10 @@ class MessageModelTestCase(TestCase):
         
         self.assertEqual(len(userTwo.messages), 2)
         
+        
+# ************************************************************************
+# note that I think technically these should be in the user views model 
+        
     def test_messages_add_fail(self):
         """Fails adding a message when no user id exists""" 
         
